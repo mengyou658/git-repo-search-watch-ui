@@ -28,7 +28,7 @@ export const useDictStore = defineStore('dict', {
   }),
   getters: {
     getDictMap(): Recordable {
-      const dictMap = wsCache.get(CACHE_KEY.DICT_CACHE)
+      const dictMap = null // wsCache.get(CACHE_KEY.DICT_CACHE)
       if (dictMap) {
         this.dictMap = dictMap
       }
@@ -59,7 +59,8 @@ export const useDictStore = defineStore('dict', {
             value: dictData.value,
             label: dictData.label,
             colorType: dictData.colorType,
-            cssClass: dictData.cssClass
+            cssClass: dictData.cssClass,
+            creator: dictData.creator
           })
         })
         this.dictMap = dictDataMap
@@ -89,7 +90,8 @@ export const useDictStore = defineStore('dict', {
           value: dictData.value,
           label: dictData.label,
           colorType: dictData.colorType,
-          cssClass: dictData.cssClass
+          cssClass: dictData.cssClass,
+          creator: dictData.creator
         })
       })
       this.dictMap = dictDataMap

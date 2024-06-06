@@ -6,40 +6,46 @@
  * @FilePath: /Workflow-Vue3/src/components/nodeWrap.vue
 -->
 <template>
-     <div class="node-wrap" v-if="nodeConfig.type < 3">
-      <div class="node-wrap-box" :class="(nodeConfig.type == 0 ? 'start-node ' : '') +(isTried && nodeConfig.error ? 'active error' : '')">
-          <div class="title" :style="`background: rgb(${bgColors[nodeConfig.type]});`">
-            <span v-if="nodeConfig.type == 0">{{ nodeConfig.nodeName }}</span>
-            <template v-else>
-              <span class="iconfont">{{nodeConfig.type == 1?'':''}}</span>
-              <input
-                v-if="isInput"
-                type="text"
-                class="ant-input editable-title-input"
-                @blur="blurEvent()"
-                @focus="$event.currentTarget.select()"
-                v-focus
-                v-model="nodeConfig.nodeName"
-                :placeholder="defaultText"
-              />
-              <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
-              <i class="anticon anticon-close close" @click="delNode"></i>
-            </template>
-          </div>
-          <div class="content" @click="setPerson">
-            <div class="text">
-                <span class="placeholder" v-if="!showText">请选择{{defaultText}}</span>
-                {{showText}}
-            </div>
-            <i class="anticon anticon-right arrow"></i>
-          </div>
-          <div class="error_tip" v-if="isTried && nodeConfig.error">
-            <i class="anticon anticon-exclamation-circle"></i>
-          </div>
+  <div class="node-wrap" v-if="nodeConfig.type < 3">
+    <div
+      class="node-wrap-box"
+      :class="
+        (nodeConfig.type == 0 ? 'start-node ' : '') +
+        (isTried && nodeConfig.error ? 'active error' : '')
+      "
+    >
+      <div class="title" :style="`background: rgb(${bgColors[nodeConfig.type]});`">
+        <span v-if="nodeConfig.type == 0">{{ nodeConfig.nodeName }}</span>
+        <template v-else>
+          <span class="iconfont">{{ nodeConfig.type == 1 ? '' : '' }}</span>
+          <input
+            v-if="isInput"
+            type="text"
+            class="ant-input editable-title-input"
+            @blur="blurEvent()"
+            @focus="$event.currentTarget.select()"
+            v-focus
+            v-model="nodeConfig.nodeName"
+            :placeholder="defaultText"
+          />
+          <span v-else class="editable-title" @click="clickEvent()">{{ nodeConfig.nodeName }}</span>
+          <i class="anticon anticon-close close" @click="delNode"></i>
+        </template>
       </div>
-      <addNode v-model:childNodeP="nodeConfig.childNode" />
+      <div class="content" @click="setPerson">
+        <div class="text">
+          <span class="placeholder" v-if="!showText">请选择{{ defaultText }}</span>
+          {{ showText }}
+        </div>
+        <i class="anticon anticon-right arrow"></i>
+      </div>
+      <div class="error_tip" v-if="isTried && nodeConfig.error">
+        <i class="anticon anticon-exclamation-circle"></i>
+      </div>
     </div>
-    <div class="branch-wrap" v-if="nodeConfig.type == 4">
+    <addNode v-model:childNodeP="nodeConfig.childNode" />
+  </div>
+  <div class="branch-wrap" v-if="nodeConfig.type == 4">
     <div class="branch-box-wrap">
       <div class="branch-box">
         <button class="add-branch" @click="addTerm">添加条件</button>
@@ -57,14 +63,25 @@
                     @focus="$event.currentTarget.select()"
                     v-model="item.nodeName"
                   />
-                  <span v-else class="editable-title" @click="clickEvent(index)">{{ item.nodeName }}</span>
-                  <span class="priority-title" @click="setPerson(item.priorityLevel)">优先级{{ item.priorityLevel }}</span>
+                  <span v-else class="editable-title" @click="clickEvent(index)">{{
+                    item.nodeName
+                  }}</span>
+                  <span class="priority-title" @click="setPerson(item.priorityLevel)"
+                    >优先级{{ item.priorityLevel }}</span
+                  >
                   <i class="anticon anticon-close close" @click="delTerm(index)"></i>
                 </div>
-                <div class="sort-right" v-if="index != nodeConfig.conditionNodes.length - 1" @click="arrTransfer(index)">&gt;</div>
-                <div class="content" @click="setPerson(item.priorityLevel)">{{ conditionStr(nodeConfig, index) }}</div>
+                <div
+                  class="sort-right"
+                  v-if="index != nodeConfig.conditionNodes.length - 1"
+                  @click="arrTransfer(index)"
+                  >&gt;</div
+                >
+                <div class="content" @click="setPerson(item.priorityLevel)">{{
+                  conditionStr(nodeConfig, index)
+                }}</div>
                 <div class="error_tip" v-if="isTried && item.error">
-                    <i class="anticon anticon-exclamation-circle"></i>
+                  <i class="anticon anticon-exclamation-circle"></i>
                 </div>
               </div>
               <addNode v-model:childNodeP="item.childNode" />
@@ -84,9 +101,9 @@
       <addNode v-model:childNodeP="nodeConfig.childNode" />
     </div>
   </div>
-    <nodeWrap v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
+  <nodeWrap v-if="nodeConfig.childNode" v-model:nodeConfig="nodeConfig.childNode" />
 </template>
-<script  setup>
+<script setup>
 import addNode from './addNode.vue'
 import { onMounted, ref, watch, getCurrentInstance, computed } from 'vue'
 import {

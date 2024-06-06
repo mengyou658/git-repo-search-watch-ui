@@ -66,58 +66,97 @@
   </ContentWrap>
 
   <!-- 列表 -->
-  <ContentWrap>
-    <el-table
-      v-if="refreshTable"
-      v-loading="loading"
-      :data="list"
-      :default-expand-all="isExpandAll"
-      row-key="id"
-    >
-      <el-table-column :show-overflow-tooltip="true" label="菜单名称" prop="name" width="250" />
-      <el-table-column align="center" label="图标" prop="icon" width="100">
-        <template #default="scope">
-          <Icon :icon="scope.row.icon" />
-        </template>
-      </el-table-column>
-      <el-table-column label="排序" prop="sort" width="60" />
-      <el-table-column :show-overflow-tooltip="true" label="权限标识" prop="permission" />
-      <el-table-column :show-overflow-tooltip="true" label="组件路径" prop="component" />
-      <el-table-column :show-overflow-tooltip="true" label="组件名称" prop="componentName" />
-      <el-table-column label="状态" prop="status" width="80">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作">
-        <template #default="scope">
-          <el-button
-            v-hasPermi="['system:menu:update']"
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-          >
-            修改
-          </el-button>
-          <el-button
-            v-hasPermi="['system:menu:create']"
-            link
-            type="primary"
-            @click="openForm('create', undefined, scope.row.id)"
-          >
-            新增
-          </el-button>
-          <el-button
-            v-hasPermi="['system:menu:delete']"
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+  <ContentWrap :bodyStyle="{ height: '700px' }">
+    <el-auto-resizer>
+      <template #default="{ height, width }">
+        <el-table-v2
+          :columns="columns"
+          expand-column-key="name"
+          :data="list"
+          :width="width"
+          :height="700"
+        >
+          <template #cell="{ column, rowData }">
+            <template v-if="column.dataKey === 'icon'">
+              <Icon :icon="rowData.icon" />
+            </template>
+            <template v-else-if="column.dataKey === 'status'">
+              <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="rowData.status" />
+            </template>
+            <template v-else-if="column.dataKey === 'visible'">
+              <dict-tag :type="DICT_TYPE.COMMON_VISIBLE" :value="rowData.visible" />
+            </template>
+            <template v-else-if="column.dataKey === 'operation'">
+              <el-button
+                v-hasPermi="['system:menu:update']"
+                link
+                type="primary"
+                @click="openForm('update', rowData.id)"
+              >
+                修改
+              </el-button>
+              <el-button
+                v-hasPermi="['system:menu:create']"
+                link
+                type="primary"
+                @click="openForm('create', undefined, rowData.id)"
+              >
+                新增
+              </el-button>
+              <el-button
+                v-hasPermi="['system:menu:delete']"
+                link
+                type="danger"
+                @click="handleDelete(rowData.id)"
+              >
+                删除
+              </el-button>
+              <el-dropdown
+                @command="(command) => handleCommand(command, rowData)"
+                v-hasPermi="[
+                  'system:user:delete',
+                  'system:user:update-password',
+                  'system:permission:assign-user-role'
+                ]"
+              >
+                <el-button type="primary" link><Icon icon="ep:d-arrow-right" /> 更多</el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      command="handleMenuDisable"
+                      v-if="checkPermi(['system:menu:update'])"
+                    >
+                      <Icon icon="ep:delete" />禁用
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      command="handleMenuDisableAll"
+                      v-if="checkPermi(['system:menu:update'])"
+                    >
+                      <Icon icon="ep:delete" />禁用含子菜单
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      command="handleMenuEnable"
+                      v-if="checkPermi(['system:menu:update'])"
+                    >
+                      <Icon icon="ep:delete" />启用
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      command="handleMenuEnableAll"
+                      v-if="checkPermi(['system:menu:update'])"
+                    >
+                      <Icon icon="ep:delete" />启用含子菜单
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <template v-else>
+              {{ rowData[column.dataKey] }}
+            </template>
+          </template>
+        </el-table-v2>
+      </template>
+    </el-auto-resizer>
   </ContentWrap>
 
   <!-- 表单弹窗：添加/修改 -->
@@ -129,6 +168,12 @@ import { handleTree } from '@/utils/tree'
 import * as MenuApi from '@/api/system/menu'
 import MenuForm from './MenuForm.vue'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
+import { updateAllStatusMenu } from '@/api/system/menu'
+import { checkPermi } from '@/utils/permission'
+import * as UserApi from '@/api/system/user'
+import { Column } from 'element-plus'
+
+const stringify = JSON.stringify
 
 defineOptions({ name: 'SystemMenu' })
 
@@ -208,8 +253,134 @@ const handleDelete = async (id: number) => {
   } catch {}
 }
 
+/** 操作分发 */
+const handleCommand = (command: string, row: any) => {
+  switch (command) {
+    case 'handleMenuDisable':
+      handleMenuDisable(row.id)
+      break
+    case 'handleMenuDisableAll':
+      handleMenuDisableAll(row.id)
+      break
+    case 'handleMenuEnable':
+      handleMenuEnable(row.id)
+      break
+    case 'handleMenuEnableAll':
+      handleMenuEnableAll(row.id)
+      break
+    default:
+      break
+  }
+}
+
+const handleMenuDisable = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm('是否确认禁用', '提示')
+    // 发起删除
+    await MenuApi.updateAllStatusMenu({ id, withChild: false, status: 1 })
+    message.success(t('禁用成功'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+const handleMenuDisableAll = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm('是否确认禁用', '提示')
+    // 发起删除
+    await MenuApi.updateAllStatusMenu({ id, withChild: true, status: 1 })
+    message.success(t('禁用成功'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+const handleMenuEnable = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm('是否确认启用', '提示')
+    // 发起删除
+    await MenuApi.updateAllStatusMenu({ id, withChild: false, status: 0 })
+    message.success(t('启用成功'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+const handleMenuEnableAll = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm('是否确认启用', '提示')
+    // 发起删除
+    await MenuApi.updateAllStatusMenu({ id, withChild: true, status: 0 })
+    message.success(t('启用成功'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
 /** 初始化 **/
 onMounted(() => {
   getList()
 })
+
+//
+const columns: Column<any>[] = [
+  {
+    title: '菜单名称',
+    key: 'name',
+    dataKey: 'name',
+    width: 300
+  },
+  {
+    title: '图标',
+    key: 'icon',
+    dataKey: 'icon',
+    width: 100
+  },
+  {
+    title: '排序',
+    key: 'sort',
+    dataKey: 'sort',
+    width: 70
+  },
+  {
+    title: '权限标识',
+    key: 'permission',
+    dataKey: 'permission',
+    width: 150
+  },
+  {
+    title: '组件路径',
+    key: 'component',
+    dataKey: 'component',
+    width: 150
+  },
+  {
+    title: '组件名称',
+    key: 'componentName',
+    dataKey: 'componentName',
+    width: 150
+  },
+  {
+    title: '状态',
+    key: 'status',
+    dataKey: 'status',
+    width: 100
+  },
+  {
+    title: '显示状态',
+    key: 'visible',
+    dataKey: 'visible',
+    width: 100
+  },
+  {
+    title: '操作',
+    key: 'operation',
+    dataKey: 'operation',
+    width: 200
+  }
+]
 </script>

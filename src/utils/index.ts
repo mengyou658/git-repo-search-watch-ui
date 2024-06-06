@@ -1,4 +1,5 @@
 import { toNumber } from 'lodash-es'
+import dayjs from 'dayjs'
 
 /**
  *
@@ -448,4 +449,113 @@ export function jsonParse(str: string) {
     console.error(`str[${str}] 不是一个 JSON 字符串`)
     return ''
   }
+}
+
+export const formatDateTime = (val) => {
+  return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+}
+
+export const formatDate = (val) => {
+  return dayjs(val).format('YYYY-MM-DD')
+}
+
+// 下载文件
+export function downloadFile(obj, name, suffix) {
+  const url = window.URL.createObjectURL(new Blob([obj]))
+  const link = document.createElement('a')
+  link.style.display = 'none'
+  link.href = url
+  const fileName = dayjs().format('YYYY-MM-DD HH:mm:ss') + '-' + name + '.' + suffix
+  link.setAttribute('download', fileName)
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
+export function downloadArraybufferFile(res, name) {
+  const blob = new Blob([res.data])
+  const downloadElement = document.createElement('a')
+  const href = window.URL.createObjectURL(blob) // 创建下载的链接
+  downloadElement.href = href
+  let fileName = name
+  const headers = res.headers['content-disposition'] || res.headers['Content-Disposition']
+  if (headers) {
+    fileName = headers.substring(headers.indexOf('filename=') + 9)
+  }
+  downloadElement.download = decodeURIComponent(fileName) // 下载后文件名
+  document.body.appendChild(downloadElement)
+  downloadElement.click() // 点击下载
+  document.body.removeChild(downloadElement) // 下载完成移除元素
+  window.URL.revokeObjectURL(href) // 释放掉blob对象
+}
+
+export function applyDict(tableOptions, dictMap, dictFilter: (any, string) => boolean) {
+  if (tableOptions && dictMap) {
+    if (tableOptions.column) {
+      for (const i of tableOptions.column) {
+        applyDictReal(i, dictMap, dictFilter)
+      }
+    } else if (tableOptions.group) {
+      for (const g of tableOptions.group) {
+        for (const i of g.column) {
+          applyDictReal(i, dictMap, dictFilter)
+        }
+      }
+    }
+  }
+  return tableOptions
+}
+
+function applyDictReal(i, dictMap, dictFilter: (any, string) => boolean) {
+  if (
+    // i.dicData &&
+    // i.dicData.length &&
+    i.dictParams &&
+    i.dictParams.dictType &&
+    dictMap[i.dictParams.dictType]
+  ) {
+    // console.log(
+    //   'dictMap[i.dictParams.dictType]',
+    //   JSON.stringify(dictMap[i.dictParams.dictType]),
+    //   i.dictParams.dictType
+    // )
+    i.dicData = [
+      ...dictMap[i.dictParams.dictType]
+        .filter((it) => dictFilter(it, i.dictParams.dictType))
+        .map((it) => {
+          if (it.value === 'true') {
+            it.value = true
+          } else if (it.value === 'false') {
+            it.value = false
+          } else if (!Number.isNaN(parseInt(it.value))) {
+            it.value = parseInt(it.value)
+          }
+          return it
+        })
+    ]
+  }
+}
+
+export function toJson(o) {
+  let cache: any[] | null = []
+  const str = JSON.stringify(o, function (key, value) {
+    if (typeof value === 'object' && value !== null) {
+      if (cache.indexOf(value) !== -1) {
+        // 移除
+        return
+      }
+      // 收集所有的值
+      cache.push(value)
+    }
+    return value
+  })
+  cache = null
+  return str
+}
+
+export function isPc() {
+  const flag = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  )
+  return !flag
 }

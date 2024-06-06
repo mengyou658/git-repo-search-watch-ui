@@ -13,6 +13,11 @@ export const getAccessToken = () => {
   return wsCache.get(AccessTokenKey) ? wsCache.get(AccessTokenKey) : wsCache.get('ACCESS_TOKEN')
 }
 
+export const getAccessTokenBear = () => {
+  // 此处与TokenKey相同，此写法解决初始化时Cookies中不存在TokenKey报错
+  return 'Bearer ' + getAccessToken()
+}
+
 // 刷新token
 export const getRefreshToken = () => {
   return wsCache.get(RefreshTokenKey)

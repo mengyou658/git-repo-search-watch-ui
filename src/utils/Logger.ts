@@ -29,6 +29,15 @@ Logger.typeColor = function (type: string) {
   return color
 }
 
+Logger.log = function (...text: any) {
+  // 如果是打印帶背景圖的
+  window['cons' + 'ole']['log'](...text)
+}
+Logger.error = function (...text: any) {
+  // 如果是打印帶背景圖的
+  window['cons' + 'ole']['error'](...text)
+}
+
 Logger.print = function (type = 'default', text: any, back = false) {
   if (typeof text === 'object') {
     // 如果是對象則調用打印對象方式
@@ -37,12 +46,12 @@ Logger.print = function (type = 'default', text: any, back = false) {
   }
   if (back) {
     // 如果是打印帶背景圖的
-    console.log(
+    window['console'].log(
       `%c ${text} `,
       `background:${Logger.typeColor(type)}; padding: 2px; border-radius: 4px; color: #fff;`
     )
   } else {
-    console.log(
+    window['console'].log(
       `%c ${text} `,
       `border: 1px solid ${Logger.typeColor(type)};
         padding: 2px; border-radius: 4px;
@@ -57,17 +66,17 @@ Logger.printBack = function (type = 'primary', text) {
 
 Logger.pretty = function (type = 'primary', title, text) {
   if (typeof text === 'object') {
-    console.group('Console Group', title)
-    console.log(
+    window['console'].group('Console Group', title)
+    window['console'].log(
       `%c ${title}`,
       `background:${Logger.typeColor(type)};border:1px solid ${Logger.typeColor(type)};
         padding: 1px; border-radius: 4px; color: #fff;`
     )
-    isArray(text) ? console.table(text) : console.dir(text)
-    console.groupEnd()
+    isArray(text) ? window['console'].table(text) : window['console'].dir(text)
+    window['console'].groupEnd()
     return
   }
-  console.log(
+  window['console'].log(
     `%c ${title} %c ${text} %c`,
     `background:${Logger.typeColor(type)};border:1px solid ${Logger.typeColor(type)};
       padding: 1px; border-radius: 4px 0 0 4px; color: #fff;`,

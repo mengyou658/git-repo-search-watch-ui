@@ -7,7 +7,7 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="字典名称" prop="dictType">
+      <el-form-item label="字典名称" prop="dictType" v-if="!simpleValue">
         <el-select v-model="queryParams.dictType" class="!w-240px">
           <el-option
             v-for="item in dictTypeList"
@@ -17,7 +17,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="字典标签" prop="label">
+      <el-form-item label="字典标签" prop="label" v-if="!simpleValue">
         <el-input
           v-model="queryParams.label"
           placeholder="请输入字典标签"
@@ -26,7 +26,7 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item label="状态" prop="status" v-if="!simpleValue">
         <el-select v-model="queryParams.status" placeholder="数据状态" clearable class="!w-240px">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
@@ -37,8 +37,12 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery" v-if="!simpleValue"
+          ><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button
+        >
+        <el-button @click="resetQuery" v-if="!simpleValue"
+          ><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button
+        >
         <el-button
           type="primary"
           plain
@@ -48,6 +52,7 @@
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
         <el-button
+          v-if="!simpleValue"
           type="success"
           plain
           @click="handleExport"
@@ -63,24 +68,31 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="字典编码" align="center" prop="id" />
+      <el-table-column label="字典编码" align="center" prop="id" v-if="!simpleValue" />
       <el-table-column label="字典标签" align="center" prop="label" />
-      <el-table-column label="字典键值" align="center" prop="value" />
-      <el-table-column label="字典排序" align="center" prop="sort" />
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column label="字典键值" align="center" prop="value" v-if="!simpleValue" />
+      <el-table-column label="字典排序" align="center" prop="sort" v-if="!simpleValue" />
+      <el-table-column label="状态" align="center" prop="status" v-if="!simpleValue">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="颜色类型" align="center" prop="colorType" />
-      <el-table-column label="CSS Class" align="center" prop="cssClass" />
-      <el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
+      <el-table-column label="颜色类型" align="center" prop="colorType" v-if="!simpleValue" />
+      <el-table-column label="CSS Class" align="center" prop="cssClass" v-if="!simpleValue" />
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="remark"
+        show-overflow-tooltip
+        v-if="!simpleValue"
+      />
       <el-table-column
         label="创建时间"
         align="center"
         prop="createTime"
         width="180"
         :formatter="dateFormatter"
+        v-if="!simpleValue"
       />
       <el-table-column label="操作" align="center">
         <template #default="scope">
@@ -123,21 +135,29 @@ import * as DictDataApi from '@/api/system/dict/dict.data'
 import * as DictTypeApi from '@/api/system/dict/dict.type'
 import DictDataForm from './DictDataForm.vue'
 
+const props = defineProps<{
+  simpleValue?: string
+  dictType: string
+  condition?: object
+}>()
+
 defineOptions({ name: 'SystemDictData' })
 
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 const route = useRoute() // 路由
 
+const simpleValue = computed(() => route.query.simple === 'true' || props.simpleValue === 'true')
+
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
 const list = ref([]) // 列表的数据
 const queryParams = reactive({
   pageNo: 1,
-  pageSize: 10,
+  pageSize: 20,
   label: '',
   status: undefined,
-  dictType: route.params.dictType
+  dictType: route.params.dictType || props.dictType
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
@@ -147,7 +167,8 @@ const dictTypeList = ref<DictTypeApi.DictTypeVO[]>() // 字典类型的列表
 const getList = async () => {
   loading.value = true
   try {
-    const data = await DictDataApi.getDictDataPage(queryParams)
+    const param = { ...queryParams, ...(props.condition ? props.condition : {}) }
+    const data = await DictDataApi.getDictDataPage(param)
     list.value = data.list
     total.value = data.total
   } finally {
@@ -170,7 +191,7 @@ const resetQuery = () => {
 /** 添加/修改操作 */
 const formRef = ref()
 const openForm = (type: string, id?: number) => {
-  formRef.value.open(type, id, queryParams.dictType)
+  formRef.value.open(type, id, queryParams.dictType, simpleValue.value)
 }
 
 /** 删除按钮操作 */

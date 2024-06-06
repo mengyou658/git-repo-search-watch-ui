@@ -7,7 +7,7 @@
       :rules="formRules"
       label-width="80px"
     >
-      <el-form-item label="字典类型" prop="type">
+      <el-form-item label="字典类型" prop="type" v-if="!simpleValue">
         <el-input
           v-model="formData.dictType"
           :disabled="typeof formData.id !== 'undefined'"
@@ -15,15 +15,19 @@
         />
       </el-form-item>
       <el-form-item label="数据标签" prop="label">
-        <el-input v-model="formData.label" placeholder="请输入数据标签" />
+        <el-input
+          v-model="formData.label"
+          @change="handleLabelChange(formData.label)"
+          placeholder="请输入数据标签"
+        />
       </el-form-item>
-      <el-form-item label="数据键值" prop="value">
+      <el-form-item label="数据键值" prop="value" v-if="!simpleValue">
         <el-input v-model="formData.value" placeholder="请输入数据键值" />
       </el-form-item>
-      <el-form-item label="显示排序" prop="sort">
+      <el-form-item label="显示排序" prop="sort" v-if="!simpleValue">
         <el-input-number v-model="formData.sort" :min="0" controls-position="right" />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item label="状态" prop="status" v-if="!simpleValue">
         <el-radio-group v-model="formData.status">
           <el-radio
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
@@ -34,7 +38,7 @@
           </el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="颜色类型" prop="colorType">
+      <el-form-item label="颜色类型" prop="colorType" v-if="!simpleValue">
         <el-select v-model="formData.colorType">
           <el-option
             v-for="item in colorTypeOptions"
@@ -44,10 +48,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="CSS Class" prop="cssClass">
+      <el-form-item label="CSS Class" prop="cssClass" v-if="!simpleValue">
         <el-input v-model="formData.cssClass" placeholder="请输入 CSS Class" />
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
+      <el-form-item label="备注" prop="remark" v-if="!simpleValue">
         <el-input v-model="formData.remark" placeholder="请输入内容" type="textarea" />
       </el-form-item>
     </el-form>
@@ -73,7 +77,7 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
-  sort: undefined,
+  sort: 0,
   label: '',
   value: '',
   dictType: '',
@@ -89,6 +93,8 @@ const formRules = reactive({
   status: [{ required: true, message: '状态不能为空', trigger: 'change' }]
 })
 const formRef = ref() // 表单 Ref
+
+const simpleValue = ref(false)
 
 // 数据标签回显样式
 const colorTypeOptions = readonly([
@@ -119,7 +125,8 @@ const colorTypeOptions = readonly([
 ])
 
 /** 打开弹窗 */
-const open = async (type: string, id?: number, dictType?: string) => {
+const open = async (type: string, id?: number, dictType?: string, simple?: boolean) => {
+  simpleValue.value = simple ? simple : false
   dialogVisible.value = true
   dialogTitle.value = t('action.' + type)
   formType.value = type
@@ -149,6 +156,9 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
+    if (simpleValue.value) {
+      formData.value.value = formData.value.label
+    }
     const data = formData.value as DictDataApi.DictDataVO
     if (formType.value === 'create') {
       await DictDataApi.createDictData(data)
@@ -169,7 +179,7 @@ const submitForm = async () => {
 const resetForm = () => {
   formData.value = {
     id: undefined,
-    sort: undefined,
+    sort: 0,
     label: '',
     value: '',
     dictType: '',
@@ -179,5 +189,11 @@ const resetForm = () => {
     remark: ''
   }
   formRef.value?.resetFields()
+}
+
+const handleLabelChange = (value: string) => {
+  if (simpleValue.value) {
+    formData.value.value = value
+  }
 }
 </script>

@@ -112,7 +112,7 @@ service.interceptors.response.use(
     const msg = data.msg || errorCode[code] || errorCode['default']
     if (ignoreMsgs.indexOf(msg) !== -1) {
       // 如果是忽略的错误码，直接返回 msg 异常
-      return Promise.reject(msg)
+      return Promise.reject(new Error(msg))
     } else if (code === 401) {
       // 如果未认证，并且未进行刷新令牌，说明可能是访问令牌过期了
       if (!isRefreshToken) {
@@ -171,13 +171,13 @@ service.interceptors.response.use(
       })
       return Promise.reject(new Error(msg))
     } else if (code !== 200) {
-      if (msg === '无效的刷新令牌') {
+      if (msg === '无效的刷新令牌' || msg === 'canceled') {
         // hard coding：忽略这个提示，直接登出
         console.log(msg)
       } else {
         ElNotification.error({ title: msg })
       }
-      return Promise.reject('error')
+      return Promise.reject(new Error(msg))
     } else {
       return data
     }
@@ -193,7 +193,9 @@ service.interceptors.response.use(
     } else if (message.includes('Request failed with status code')) {
       message = t('sys.api.apiRequestFailed') + message.substr(message.length - 3)
     }
-    ElMessage.error(message)
+    if (message !== 'canceled') {
+      ElMessage.error(message)
+    }
     return Promise.reject(error)
   }
 )

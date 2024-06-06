@@ -17,16 +17,18 @@ export const useUpload = () => {
       // 1.2 获取文件预签名地址
       const presignedInfo = await FileApi.getFilePresignedUrl(fileName)
       // 1.3 上传文件（不能使用 ElUpload 的 ajaxUpload 方法的原因：其使用的是 FormData 上传，Minio 不支持）
-      return axios.put(presignedInfo.uploadUrl, options.file, {
-        headers: {
-          'Content-Type': options.file.type,
-        }
-      }).then(() => {
-        // 1.4. 记录文件信息到后端（异步）
-        createFile(presignedInfo, fileName, options.file)
-        // 通知成功，数据格式保持与后端上传的返回结果一致
-        return { data: presignedInfo.url }
-      })
+      return axios
+        .put(presignedInfo.uploadUrl, options.file, {
+          headers: {
+            'Content-Type': options.file.type
+          }
+        })
+        .then(() => {
+          // 1.4. 记录文件信息到后端（异步）
+          createFile(presignedInfo, fileName, options.file)
+          // 通知成功，数据格式保持与后端上传的返回结果一致
+          return { data: presignedInfo.url }
+        })
     } else {
       // 模式二：后端上传
       // 重写 el-upload httpRequest 文件上传成功会走成功的钩子，失败走失败的钩子

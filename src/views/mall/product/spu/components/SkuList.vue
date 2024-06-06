@@ -464,15 +464,14 @@ const generateTableData = (propertyList: any[]) => {
  */
 const validateData = (propertyList: any[]) => {
   const skuPropertyIds: number[] = []
-  formData.value!.skus!.forEach(
-    (sku) =>
-      sku.properties
-        ?.map((property) => property.propertyId)
-        ?.forEach((propertyId) => {
-          if (skuPropertyIds.indexOf(propertyId!) === -1) {
-            skuPropertyIds.push(propertyId!)
-          }
-        })
+  formData.value!.skus!.forEach((sku) =>
+    sku.properties
+      ?.map((property) => property.propertyId)
+      ?.forEach((propertyId) => {
+        if (skuPropertyIds.indexOf(propertyId!) === -1) {
+          skuPropertyIds.push(propertyId!)
+        }
+      })
   )
   const propertyIds = propertyList.map((item) => item.id)
   return skuPropertyIds.length === propertyIds.length

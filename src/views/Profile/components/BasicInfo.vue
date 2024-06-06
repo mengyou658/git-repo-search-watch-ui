@@ -27,7 +27,7 @@ defineOptions({ name: 'BasicInfo' })
 
 const { t } = useI18n()
 const message = useMessage() // 消息弹窗
-const userStore = useUserStore() 
+const userStore = useUserStore()
 // 表单校验
 const rules = reactive<FormRules>({
   nickname: [{ required: true, message: t('profile.rules.nickname'), trigger: 'blur' }],

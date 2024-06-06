@@ -40,6 +40,9 @@ import './permission'
 import '@/plugins/tongji' // 百度统计
 import Logger from '@/utils/Logger'
 
+import Avue from '@smallwei/avue';
+import '@smallwei/avue/lib/index.css';
+
 import VueDOMPurifyHTML from 'vue-dompurify-html' // 解决v-html 的安全隐患
 
 // 创建实例
@@ -63,6 +66,8 @@ const setupAll = async () => {
   await router.isReady()
 
   app.use(VueDOMPurifyHTML)
+
+  app.use(Avue)
 
   app.mount('#app')
 }

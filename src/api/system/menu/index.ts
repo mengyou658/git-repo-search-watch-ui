@@ -43,6 +43,10 @@ export const updateMenu = (data: MenuVO) => {
   return request.put({ url: '/system/menu/update', data })
 }
 
+export const updateAllStatusMenu = (data: any) => {
+  return request.put({ url: '/system/menu/updateAllStatus', data })
+}
+
 // 删除菜单
 export const deleteMenu = (id: number) => {
   return request.delete({ url: '/system/menu/delete?id=' + id })

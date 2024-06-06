@@ -127,7 +127,11 @@ const open = async (type: string, id?: number) => {
         id
       )) as DiscountActivityApi.DiscountActivityVO
       const supId = data.products[0].spuId
-      await getSpuDetails(supId!, data.products?.map((sku) => sku.skuId), data.products)
+      await getSpuDetails(
+        supId!,
+        data.products?.map((sku) => sku.skuId),
+        data.products
+      )
       formRef.value.setValues(data)
     } finally {
       formLoading.value = false

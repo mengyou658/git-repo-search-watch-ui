@@ -32,6 +32,10 @@ export const createConfig = (data: ConfigVO) => {
   return request.post({ url: '/infra/config/create', data })
 }
 
+export const saveConfig = (data: any) => {
+  return request.post({ url: '/infra/config/save', data })
+}
+
 // 修改参数
 export const updateConfig = (data: ConfigVO) => {
   return request.put({ url: '/infra/config/update', data })
