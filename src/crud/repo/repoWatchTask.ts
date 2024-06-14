@@ -134,7 +134,7 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
         hide: false,
         type: 'input',
         search: true,
-        overHidden: false,
+        overHidden: true,
         editDisabled: false,
         addDisplay: true,
         editDisplay: true,
@@ -153,7 +153,7 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
         addDisplay: true,
         editDisplay: true,
         viewDisplay: true,
-        width: 140,
+        width: 100,
         value: 0,
         dictParams: {
           dictName: 'repo_watch_task_repo_type',
@@ -211,7 +211,7 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
         addDisplay: true,
         editDisplay: true,
         viewDisplay: true,
-        width: 140,
+        width: 100,
         value: 0,
         dictParams: {
           dictName: 'repo_watch_task_type',
@@ -231,7 +231,7 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
       {
         label: '运行状态',
         prop: 'workStatus',
-        hide: false,
+        hide: true,
         type: 'select',
         search: false,
         overHidden: false,
@@ -375,7 +375,7 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
         // append: 'el-icon-plus',
         value: '',
         span: 24,
-        width: 140,
+        width: 240,
         dictParams: {
           dictName: 'repo_watch_task_keyword_negative',
           dictType: 'repo_watch_task_keyword_negative'
