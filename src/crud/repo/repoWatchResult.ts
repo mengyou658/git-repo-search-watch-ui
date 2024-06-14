@@ -34,7 +34,7 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
     height: 'auto',
     calcHeight: 120,
     searchMenuSpan: 8,
-    searchLabelWidth: 120,
+    searchLabelWidth: 150,
     menuWidth: 90,
     dialogWidth: selection ? '60%' : '100%',
     dictDatas: {},
@@ -75,9 +75,9 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
       {
         label: '任务',
         prop: 'taskId',
-        hide: true,
+        hide: false,
         type: 'select',
-        search: false,
+        search: true,
         formslot: true,
         overHidden: true,
         editDisabled: false,
@@ -146,6 +146,35 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
       },
 
       {
+        label: '开发语言是否空白',
+        prop: 'repoLangEmpty',
+        hide: true,
+        type: 'select',
+        search: true,
+        overHidden: false,
+        editDisabled: false,
+        addDisplay: true,
+        editDisplay: true,
+        viewDisplay: true,
+        width: 140,
+        value: 0,
+        dictParams: {
+          dictName: 'infra_boolean_string',
+          dictType: 'infra_boolean_string'
+        },
+        dicData: [
+          {
+            value: true,
+            label: '是'
+          },
+          {
+            value: false,
+            label: '否'
+          }
+        ]
+      },
+
+      {
         label: '仓库名称',
         prop: 'repoName',
         hide: true,
@@ -171,6 +200,35 @@ export const tableOption = (self, isTenant, isPartner, crud) => {
         editDisplay: true,
         viewDisplay: true
         // width: 120
+      },
+
+      {
+        label: '仓库描述是否空白',
+        prop: 'repoDescEmpty',
+        hide: true,
+        type: 'select',
+        search: true,
+        overHidden: false,
+        editDisabled: false,
+        addDisplay: true,
+        editDisplay: true,
+        viewDisplay: true,
+        width: 140,
+        value: 0,
+        dictParams: {
+          dictName: 'infra_boolean_string',
+          dictType: 'infra_boolean_string'
+        },
+        dicData: [
+          {
+            value: true,
+            label: '是'
+          },
+          {
+            value: false,
+            label: '否'
+          }
+        ]
       },
 
       {

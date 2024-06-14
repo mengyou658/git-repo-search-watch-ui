@@ -65,6 +65,8 @@
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as DictDataApi from '@/api/system/dict/dict.data'
 import { CommonStatusEnum } from '@/utils/constants'
+import { useDictStoreWithOut } from '@/store/modules/dict'
+const dictStore = useDictStoreWithOut()
 
 defineOptions({ name: 'SystemDictDataForm' })
 
@@ -163,9 +165,11 @@ const submitForm = async () => {
     if (formType.value === 'create') {
       await DictDataApi.createDictData(data)
       message.success(t('common.createSuccess'))
+      dictStore.resetDict()
     } else {
       await DictDataApi.updateDictData(data)
       message.success(t('common.updateSuccess'))
+      dictStore.resetDict()
     }
     dialogVisible.value = false
     // 发送操作成功的事件

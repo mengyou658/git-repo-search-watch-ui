@@ -280,7 +280,7 @@ const {
   onCrudImportDataError,
   onCrudImportDataSuccess,
   onCrudImportTemplate,
-  onCrudRowClick,
+  // onCrudRowClick,
   onCrudImportDialogCLose,
   handleCrudPageChange,
   handleCrudSizeChange,
@@ -313,6 +313,10 @@ crud.value.tableOption = tableOption
 
 const handleOpen = (url) => {
   window.open(url, '_blank')
+}
+
+const onCrudRowClick = (val) => {
+  avueCrudComponent.value.toggleSelection([val])
 }
 </script>
 <style lang="scss">
