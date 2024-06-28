@@ -10,7 +10,7 @@
 [前段https://github.com/mengyou658/git-repo-search-watch-ui](https://github.com/mengyou658/git-repo-search-watch-ui)
 
 ## 演示地址
-http://gitclone.16688.online:28001/#/repo-watch-task
+http://gitclone.16688.online/#/repo-watch-task
 
 test/123456
 
@@ -25,7 +25,9 @@ test/123456
 6. **自动更新github dns ip至hosts**
 6. **github 仓库readme展示**
 6. **增加标签和归档**
-6. **TODO 增加获取star数**
+6. **增加获取star数**
+6. **codeup里面缺少的仓库补全**
+6. **TODO 小程序**
 ## 截图
 1. ![仓库配置.png](/image/仓库配置.png)
 2. ![仓库监控.png](/image/仓库监控.png)
