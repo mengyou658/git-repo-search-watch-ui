@@ -1,5 +1,17 @@
 ## 项目描述
 通过github api搜索仓库，根据关键词，开发语言，过滤关键词，定时搜索最新提交仓库，并clone到本地或者阿里云codeup。
+
+## 演示地址 
+**联系客服发送star截图免费获取最新代码**
+
+http://gitclone.16688.online/#/repo-watch-task
+
+test/123456
+
+**注意：演示地址，测试账号，限制只能监控生成1条数据，如有其他需求，请联系开发人员或者部署新服务器**
+
+**联系客服发送star截图免费获取最新代码**
+![weixinkefu.png](image%2Fweixinkefu.png)
 ## 依赖版本
 1. jdk>=17
 2. vue3
@@ -8,13 +20,6 @@
 [后端https://github.com/mengyou658/git-repo-search-watch](https://github.com/mengyou658/git-repo-search-watch)
 
 [前段https://github.com/mengyou658/git-repo-search-watch-ui](https://github.com/mengyou658/git-repo-search-watch-ui)
-
-## 演示地址
-http://gitclone.16688.online/#/repo-watch-task
-
-test/123456
-
-**注意：演示地址，测试账号，限制只能监控生成1条数据，如有其他需求，请联系开发人员或者部署新服务器**
 
 ## 现有功能
 1. 搜索任务管理，设置搜索关键词，开发语言，过滤关键词，定时搜索，定时clone到本地或者阿里云codeup
@@ -28,6 +33,8 @@ test/123456
 6. **增加获取star数**
 6. **codeup里面缺少的仓库补全**
 6. **github目录树**
+6. **TODO 监控任务默认搜索模式和自定义搜索模式**
+6. **TODO 监控任务搜索结果测试**
 6. **TODO 小程序**
 ## 截图
 1. ![仓库配置.png](/image/仓库配置.png)
